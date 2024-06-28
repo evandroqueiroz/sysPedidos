@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listagem de Produtos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body>
+    <h1>Sistema de Pedidos</h1>
+    <div>
+        <p>Listagem de Produtos</p>
+        <form>
+            <label>ID: </label>
+            <input type="text" id="tx_id" disabled="disabled" readonly="readonly"/>
+            <br>
+            <label>Nome: </label>
+            <input type="text" id="tx_nome"/>
+            <br>
+            <label>Quantidade em Estoque: </label>
+            <input type="number" id="nu_quantidade_estoque">
+            <br>
+            <label>Preço Unitário Atual: </label>
+            <input type="number" id="nu_preco_unidade_atual">
+            <br>
+            <button type="button" onclick="criar()">Criar</button>
+            <button type="button" onclick="alterar()">Alterar</button>
+            <button type="button" onclick="carregar()">Listar</button>
+            <button type="button" onclick="limpar()">Limpar</button>
+        </form>
+        <table class="table" id="listagem"></table>
+    </div>
+</body>
+<script>
+    // Limpar campos
+    function limpar(){
+        document.getElementById("tx_id").value = "";
+        document.getElementById("tx_nome").value = "";
+        document.getElementById("nu_quantidade_estoque").value = "";
+        document.getElementById("nu_preco_unidade_atual").value = "";
+    }
+    
+    function alterar(){
+        console.log("Alterar produto!");
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            if(this.readystate == 4 && this.status == 200){
+                alert("Estado alterado com sucesso");
+                carregar();
+            }
+        }
+        xhttp.open("PUT","/produto/" + document.getElementById("tx_id").value);
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send(JSON.stringify({id:document.getElementById("tx_id").value, nome:document.getElementById("tx_nome").value, quantidade:document.getElementById("nu_quantidade_estoque").value, preco:document.getElementById("nu_preco_unidade_atual").value}));  
+    }
+
+    function excluir(id_produto){
+        console.log("Excluir Produto!");
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+                alert("Produto excluído com sucesso");
+                carregar();
+            }
+        }
+        xhttp.open("DELETE", "/produto/" + id_produto);
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send();
+    }
+
+    function criar(){
+        consol.log("Criar Novo Produto!");
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+                alert("Produto criado com sucesso");
+                carregar();
+            }
+        }
+        xhttp.open("POST", "/produto");
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send(JSON.stringify({id:null, nome:document.getElementById("tx_nome").value}));
+    }
+
+    function preencher(id_produto, nome_produto, quantidade_produto, unitario_produto){
+        console.log(id_produto, nome_produto, quantidade_produto, unitario_produto);
+        document.getElementById("tx_id").value = id_produto;
+        document.getElementById("tx_nome").value = nome_produto;
+        document.getElementById("nu_quantidade_estoque").value = quantidade_produto;
+        document.getElementById("nu_preco_unidade_atual").value = unitario_produto;
+    }
+
+    function carregar() {
+    var xhttp = new XMLHttpRequest(); // Correção do nome da variável
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var dados = JSON.parse(this.responseText);
+            var conteudo = "<tr> <th>ID</th> <th>Nome</th> <th>Quantidade</th> <th>Unitário</th> <th>Ações</th> </tr>";
+            for (var produto of dados) {
+                conteudo += "<tr>";
+                conteudo += "<td>" + produto.id + "</td>";
+                conteudo += "<td>" + produto.nome + "</td>";
+                conteudo += "<td>" + produto.quantidade + "</td>";
+                conteudo += "<td>" + produto.preco + "</td>";
+                conteudo += "<td>";
+                conteudo += "<button type='button' onclick=\"preencher('" + produto.id + "','" + produto.nome + "','" + produto.quantidade + "','" + produto.preco + "')\">Alterar</button> ";
+                conteudo += "<button type='button' onclick='excluir(" + produto.id + ")'>Excluir</button>";
+                conteudo += "</td>";
+                conteudo += "</tr>";
+            }
+            document.getElementById("listagem").innerHTML = conteudo;
+            limpar();
+            console.log(this.responseText);
+            console.log(dados);
+        }
+    }
+    xhttp.open("GET", "/produtos", true); 
+    xhttp.send();
+}
+
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</html>
