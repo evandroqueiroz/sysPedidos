@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso ITILH</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body>
+    <header class="bg-primary text-white p-3">
+        <h1>Sistema de Pedidos</h1>
+    </header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="http://localhost:8080/app/index.html">Home</a>
+            <a class="navbar-brand" href="http://localhost:8080/app/produtos.html">Produtos</a>
+            <a class="navbar-brand" href="http://localhost:8080/app/municipios.html">Municípios</a>
+            <a class="navbar-brand" href="http://localhost:8080/app/estados.html">Estados</a>
+        </div>
+    </nav>
+        <h2>Listagem de Clientes</h2>
+        <form class="mb-4">
+            <div class="mb-3">
+                <label for="tx_id" class="form-label">ID:</label>
+                <input type="text" class="form-control" id="tx_id" disabled readonly>
+            </div>
+            <div class="mb-3">
+                <label for="tx_id_municipio" class="form-label">ID Município:</label>
+                <input type="text" class="form-control" id="tx_id_municipio" disabled readonly>
+            </div>
+            <div class="mb-3">
+                <label for="tx_nome_razao_social" class="form-label">Nome:</label>
+                <input type="text" class="form-control" id="tx_nome_razao_social">
+            </div>
+            <div class="mb-3">
+                <label for="tx_cpf" class="form-label">CPF:</label>
+                <input type="text" class="form-control" id="tx_cpf">
+            </div>
+            <div class="mb-3">
+                <label for="tx_cnpj" class="form-label">CNPJ:</label>
+                <input type="text" class="form-control" id="tx_cnpj">
+            </div>
+            <div class="mb-3">
+                <label for="tx_telefone" class="form-label">Telefone:</label>
+                <input type="text" class="form-control" id="tx_telefone">
+            </div>
+            <div class="mb-3">
+                <label for="tx_endereco" class="form-label">Endereço:</label>
+                <input type="text" class="form-control" id="tx_endereco">
+            </div>
+            <div class="mb-3">
+                <label for="tx_bairro" class="form-label">Bairro:</label>
+                <input type="text" class="form-control" id="tx_bairro">
+            </div>
+            <div class="mb-3">
+                <label for="tx_cep" class="form-label">CEP:</label>
+                <input type="text" class="form-control" id="tx_cep">
+            </div>
+            <div class="mb-3">
+                <label for="tx_email" class="form-label">Email:</label>
+                <input type="text" class="form-control" id="tx_email">
+            </div>
+            <div class="mb-3">
+                <label for="tx_informacoes" class="form-label">Informações:</label>
+                <input type="text" class="form-control" id="tx_informacoes">
+            </div>
+            <div class="mb-3">
+                <label for="bo_ativo" class="form-label">Ativo:</label>
+                <select id="bo_ativo" class="form-select">
+                    <option value="true">Verdade</option>
+                    <option value="false">Falso</option>
+                </select>
+            </div>
+            <button type="button" onclick="criar()" class="btn btn-primary">Criar</button>
+            <button type="button" onclick="alterar()" class="btn btn-secondary">Alterar</button>
+            <button type="button" onclick="limpar()" class="btn btn-warning">Limpar</button>
+            <button type="button" onclick="carregar()" class="btn btn-success">Listar</button>
+        </form>
+
+        <table class="table table-striped" id="Listagem"></table>
+    </div>
+
+    <script>
+        function criar() {
+            console.log("Criar");
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    alert("Cliente adicionado com sucesso");
+                    carregar();
+                }
+            }
+            xhttp.open("POST", "/cliente");
+            xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhttp.send(JSON.stringify({
+                id: null,
+                nome: document.getElementById("tx_nome_razao_social").value,
+                cpf: document.getElementById("tx_cpf").value,
+                cnpj: document.getElementById("tx_cnpj").value,
+                telefone: document.getElementById("tx_telefone").value,
+                endereco: document.getElementById("tx_endereco").value,
+                bairro: document.getElementById("tx_bairro").value,
+                cep: document.getElementById("tx_cep").value,
+                email: document.getElementById("tx_email").value,
+                informacoes: document.getElementById("tx_informacoes").value,
+                ativo: document.getElementById("bo_ativo").value,
+                municipio: {
+                    id: document.getElementById("tx_id_municipio").value
+                }
+            }));
+        }
+
+        function preencher(Id_cliente, id_municipio, nome_cliente, cpf_cliente, cnpj_cliente, telefone_cliente, endereco_cliente, bairro_cliente, cep_cliente, email_cliente, informacoes_cliente) {
+            console.log(Id_cliente, id_municipio, nome_cliente, cpf_cliente, cnpj_cliente, telefone_cliente, endereco_cliente, bairro_cliente, cep_cliente, email_cliente, informacoes_cliente);
+            document.getElementById("tx_id").value = Id_cliente;
+            document.getElementById("tx_id_municipio").value = id_municipio;
+            document.getElementById("tx_nome_razao_social").value = decodeURI(nome_cliente);
+            document.getElementById("tx_cpf").value = cpf_cliente;
+            document.getElementById("tx_cnpj").value = cnpj_cliente;
+            document.getElementById("tx_telefone").value = telefone_cliente;
+            document.getElementById("tx_endereco").value = endereco_cliente;
+            document.getElementById("tx_bairro").value = bairro_cliente;
+            document.getElementById("tx_cep").value = cep_cliente;
+            document.getElementById("tx_email").value = email_cliente;
+            document.getElementById("tx_informacoes").value = informacoes_cliente;
+        }
+
+        function carregar() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var dados = JSON.parse(this.responseText);
+                    var conteudo = "<tr><th>ID</th><th>Nome</th><th>CPF</th><th>CNPJ</th><th>Telefone</th><th>Endereço</th><th>Bairro</th><th>CEP</th><th>Email</th><th>Informações</th><th>Ativo</th><th>Ações</th></tr>";
+                    for (var cliente of dados) {
+                        conteudo += "<tr><td>" + cliente.id + "</td><td>" + cliente.nome + "</td><td>" + cliente.cpf + "</td><td>" + cliente.cnpj + "</td><td>" + cliente.telefone + "</td><td>" + cliente.endereco + "</td><td>" + cliente.bairro + "</td><td>" + cliente.cep + "</td><td>" + cliente.email + "</td><td>" + cliente.informacoes + "</td><td>" + cliente.ativo + "</td>";
+                        conteudo += "<td><button type='button' class='btn btn-warning btn-sm' onclick=\"preencher(" + cliente.id + ",'" + encodeURI(cliente.nome) + "','" + cliente.cpf + "','" + cliente.cnpj + "','" + cliente.telefone + "','" + cliente.endereco + "','" + cliente.bairro + "','" + cliente.cep + "','" + cliente.email + "','" + cliente.informacoes + "')\">Preencher</button> ";
+                        conteudo += "<button type='button' class='btn btn-danger btn-sm' onclick='Excluir(" + cliente.id + ")'>Excluir</button></td></tr>";
+                    }
+                    document.getElementById("Listagem").innerHTML = conteudo;
+                    limpar();
+                    console.log(this.responseText);
+                    console.log(dados);
+                }
+            };
+            xhttp.open("GET", "/clientes");
+            xhttp.send();
+        }
+
+        function limpar() {
+            document.getElementById("tx_id").value = "";
+            document.getElementById("tx_nome_razao_social").value = "";
+            document.getElementById("tx_cpf").value = "";
+            document.getElementById("tx_cnpj").value = "";
+            document.getElementById("tx_telefone").value = "";
+            document.getElementById("tx_endereco").value = "";
+            document.getElementById("tx_bairro").value = "";
+            document.getElementById("tx_cep").value = "";
+            document.getElementById("tx_email").value = "";
+            document.getElementById("tx_informacoes").value = "";
+        }
+
+        function alterar() {
+            console.log("alterar");
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    alert("Cliente alterado com sucesso");
+                    carregar();
+                }
+            }
+            xhttp.open("PUT", "/cliente/" + document.getElementById("tx_id").value);
+            xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhttp.send(JSON.stringify({
+                id: document.getElementById("tx_id").value,
+                nome: document.getElementById("tx_nome_razao_social").value,
+                cpf: document.getElementById("tx_cpf").value,
+                cnpj: document.getElementById("tx_cnpj").value,
+                telefone: document.getElementById("tx_telefone").value,
+                endereco: document.getElementById("tx_endereco").value,
+                bairro: document.getElementById("tx_bairro").value,
+                cep: document.getElementById("tx_cep").value,
+                email: document.getElementById("tx_email").value,
+                informacoes: document.getElementById("tx_informacoes").value,
+                ativo: document.getElementById("bo_ativo").value,
+                municipio: {
+                    id: document.getElementById("tx_id_municipio").value
+                }
+            }));
+        }
+
+        function Excluir(Id_cliente) {
+            console.log("Excluir");
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    alert("Cliente excluído com sucesso");
+                    carregar();
+                }
+            }
+            xhttp.open("DELETE", "/cliente/" + Id_cliente);
+            xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhttp.send();
+        }
+    </script>
+</body>
+</html>
